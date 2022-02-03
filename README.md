@@ -80,7 +80,7 @@ or
 ```bash
 pdm run dev-server
 ```
-Make sure to visit the `/docs` page to see the API documentation and use the service. 
+<strong>A postman collection with GraphQL queries can be found [here](https://www.getpostman.com/collections/c5f9bb437db05be90398).</strong>
 
 If you want to execute the test suite:
 
@@ -129,3 +129,19 @@ make test
 - `resolver`: the GraphQL resolvers that are responsible for data fetching.
 - `common`: the common code with config and utility methods.
 - `tests`: the test suite.
+
+## TODO
+
+- Remove data mocking and a database, probably Postgres. Development with Postgres is currently a pain due to [psycopg2 installation issue on M1](https://github.com/psycopg/psycopg2/issues/1286).
+
+## Extensions 
+- Change data layer to use Neo4j due to efficient spatial and temporal queries. Possible query - 
+```
+MATCH (p:Person {healthstatus:$status})-[v:VISITS]->(pl:Place)
+ WHERE p.confirmedtime < v.starttime
+ RETURN distinct pl.name as place LIMIT 20
+```
+- Move to asynchronous workflow with a clustering algorithm like `DBSCAN` using euclidean distance and time as distance metrics.
+
+## Postman Collection
+<strong>A postman collection with GraphQL queries can be found [here](https://www.getpostman.com/collections/c5f9bb437db05be90398).</strong>
