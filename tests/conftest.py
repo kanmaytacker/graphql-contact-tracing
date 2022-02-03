@@ -3,6 +3,14 @@ from glob import glob
 
 
 def refactor(string: str) -> str:
+    """Refactor a string to be used as a test name.
+
+    Args:
+        string (str): The string to refactor.
+
+    Returns:
+        str: The refactored string.
+    """
     return string.replace("/", ".").replace("\\", ".").replace(".py", "")
 
 

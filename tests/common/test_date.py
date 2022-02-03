@@ -22,7 +22,7 @@ def test_same_day(input_data: Tuple[str, str], expected: int) -> None:
     from_date = parser.parse(input_data[1])
 
     actual = difference_in_days(to_date, from_date)
-    assert actual == expected, f"If both the dates are the same, then the difference must be 0"
+    assert actual == expected, "If both the dates are the same, then the difference must be 0"
 
 
 @pytest.mark.parametrize(
@@ -73,4 +73,4 @@ def test_negative_difference(input_data: Tuple[str, str], expected: int) -> None
     to_date = parser.parse(input_data[1])
 
     actual = difference_in_days(from_date, to_date)
-    assert actual == expected, f"If both the dates are the same, then the difference must be 0"
+    assert actual == expected, f"If the dates are {from_date} and {to_date}, then the difference must be {expected}"

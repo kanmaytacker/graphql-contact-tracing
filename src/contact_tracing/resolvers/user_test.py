@@ -9,7 +9,7 @@ from contact_tracing.mock.user_tests import tests
 from contact_tracing.schema.user_test import TestResult, UserTest
 
 
-def get_tests(test_result: TestResult = None, days_threshold=None) -> List[UserTest]:
+def get_tests(test_result: Optional[TestResult] = None, days_threshold: Optional[int] = None) -> List[UserTest]:
     """Resolver function to fetch all user tests from the database.
 
     TODO:
@@ -29,15 +29,17 @@ def get_tests(test_result: TestResult = None, days_threshold=None) -> List[UserT
         return parsed_tests
 
     if test_result:
-        parsed_tests = filter(lambda test: test.test_result == test_result, parsed_tests)
+        parsed_tests = list(filter(lambda test: test.test_result == test_result, parsed_tests))
 
     if days_threshold:
-        parsed_tests = filter(
-            lambda test: difference_in_days(datetime.now(timezone.utc), test.timestamp) <= days_threshold,
-            parsed_tests,
+        parsed_tests = list(
+            filter(
+                lambda test: difference_in_days(datetime.now(timezone.utc), test.timestamp) <= days_threshold,
+                parsed_tests,
+            )
         )
 
-    return list(parsed_tests)
+    return parsed_tests
 
 
 def get_parsed_tests() -> List[UserTest]:
@@ -49,7 +51,7 @@ def get_parsed_tests() -> List[UserTest]:
     return list(map(to_test, tests))
 
 
-def to_test(test: dict[Union[str, int]]) -> UserTest:
+def to_test(test: dict[str, Union[str, int]]) -> UserTest:
     """Converts a dictionary to a UserTest object.
 
     Args:
@@ -70,13 +72,13 @@ def to_test(test: dict[Union[str, int]]) -> UserTest:
     )
 
 
-def get_test(id: int) -> Optional[UserTest]:
+def get_test(test_id: int) -> Optional[UserTest]:
     """Resolver function to fetch a user test from the database.
 
     Args:
-        id (int): The id of the user test to be fetched.
+        test_id (int): The id of the user test to be fetched.
 
     Returns:
         Optional[UserTest]: The user test if found, else None.
     """
-    return next((test for test in get_tests() if test.id == id), None)
+    return next((test for test in get_tests() if test.id == test_id), None)

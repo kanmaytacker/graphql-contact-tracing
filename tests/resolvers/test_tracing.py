@@ -1,3 +1,4 @@
+"""Tests for the tracing module."""
 from typing import Any, Dict, List
 
 import pytest
@@ -9,7 +10,11 @@ from contact_tracing.schema.user_location import Location
 
 @pytest.mark.usefixtures("locations")
 def test_possible_exposure(locations: List[Dict[str, Any]]) -> None:
+    """Test that the exposure is correctly calculated.
 
+    Args:
+        locations (List[Dict[str, Any]]): A list of locations.
+    """
     selected_user_id = 2
     selected_user_coordinates = next(filter(lambda location: location["user_id"] == selected_user_id, locations))
 
@@ -27,7 +32,7 @@ def test_possible_exposure(locations: List[Dict[str, Any]]) -> None:
 
 
 def test_no_exposure() -> None:
-
+    """Negative test case to check that no exposure is calculated when the user is not near to any other positive user."""
     selected_user_location = Location(lat=0, lng=0)
 
     sources = get_possible_exposure(selected_user_location, DEFAULT_RADIUS, DEFAULT_DAYS_THRESHOLD)

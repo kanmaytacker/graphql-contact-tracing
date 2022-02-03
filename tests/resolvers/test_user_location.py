@@ -1,15 +1,11 @@
-from typing import Dict, List, Tuple, Union
+"""Tests for user location resolvers."""
+from typing import Any, Dict, List, Tuple, Union
 
 import pytest
 from dateutil import parser
 
-from contact_tracing.resolvers.user_location import (
-    get_location,
-    is_distance_valid,
-    is_time_valid,
-    is_user_valid,
-    to_location,
-)
+from contact_tracing.resolvers.user_location import get_location, is_distance_valid, is_time_valid, is_user_valid
+from contact_tracing.resolvers.user_location import to_location as location_converter
 from contact_tracing.schema.user_location import Location, UserLocation
 
 
@@ -20,12 +16,17 @@ def test_user_converter(location: Dict[str, Union[str, int]]) -> None:
     Args:
         location (Dict[str, Union[str, int]]): Fixture of the location data to be converted.
     """
-    parsed_location = to_location(location)
+    parsed_location = location_converter(location)
     assert_location(parsed_location, location)
 
 
-def assert_location(actual: UserLocation, expected: Dict[str, Union[str, int]]) -> None:
-    """Method for asserting a location object."""
+def assert_location(actual: UserLocation, expected: Dict[str, Any]) -> None:
+    """Assert that the location is the same.
+
+    Args:
+        actual (UserLocation): The actual location.
+        expected (Dict[str, Union[str, int]]): The expected location.
+    """
     assert actual.id == expected["id"], "If filtered correctly, then the id should be the same"
     assert actual.user_id == expected["user_id"], "If filtered correctly, then the user_id should be the same"
 
@@ -41,7 +42,7 @@ def assert_location(actual: UserLocation, expected: Dict[str, Union[str, int]]) 
 
 
 @pytest.mark.usefixtures("location")
-def test_get_location(location: Dict[str, Union[str, int]]) -> None:
+def test_get_location(location: Dict[str, Any]) -> None:
     """Test for fetching single location.
 
     Args:
@@ -100,7 +101,7 @@ def test_time_filtering(input_data: Tuple[Tuple[str, str], int], expected: bool)
     ("input_data", "expected"),
     [(([(51.5007, 0.1246), (51.4995, 0.1248)], 200), True), (([(51.5007, 0.1246), (51.4995, 0.1248)], 100), False)],
 )
-def test_radius_filtering(input_data: Tuple[List[Tuple[float, float]], int], expected: bool) -> None:
+def test_radius_filtering(input_data: Tuple[List[Tuple[float, float]], int], expected: bool) -> None:  # noqa: WPS234
     """Test for checking the filter on the radius.
 
     Args:
@@ -120,4 +121,4 @@ def test_radius_filtering(input_data: Tuple[List[Tuple[float, float]], int], exp
     actual = is_distance_valid(start_location, end_location, radius)
     assert (
         actual == expected
-    ), f"If the coordinates are {start_coordinates} and {end_coordinates} and radius is {radius}, then the result should be {expected}"
+    ), f"If the locations are {start_coordinates} and {end_coordinates} with radius {radius}, then the result should be {expected}"

@@ -1,3 +1,4 @@
+"""Mock user locations data."""
 locations = [
     {
         "id": 1,

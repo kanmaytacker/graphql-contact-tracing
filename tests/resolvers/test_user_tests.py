@@ -1,3 +1,4 @@
+"""Tests for user tests resolvers."""
 from datetime import datetime, timezone
 from typing import Dict, List, Union
 
@@ -5,7 +6,8 @@ import pytest
 from dateutil import parser
 from pytest_mock import MockerFixture
 
-from contact_tracing.resolvers.user_test import get_test, get_tests, to_test
+from contact_tracing.resolvers.user_test import get_test, get_tests
+from contact_tracing.resolvers.user_test import to_test as test_converter
 from contact_tracing.schema.user_test import TestResult
 
 
@@ -16,7 +18,7 @@ def test_user_converter(test: Dict[str, Union[str, int]]) -> None:
     Args:
         test (Dict[str, Union[str, int]]): Fixture of the test data to be converted.
     """
-    parsed_test = to_test(test)
+    parsed_test = test_converter(test)
 
     assert parsed_test.id == test["id"], "If parsed correctly, then the id should be the same"
     assert parsed_test.user_id == test["user_id"], "If parsed correctly, then the user_id should be the same"
@@ -44,7 +46,7 @@ def test_get_user(test: Dict[str, Union[str, int]]) -> None:
 
 
 @pytest.mark.usefixtures("tests")
-def test_result_type_filter(tests: List[Dict[str, Union[str, int]]]) -> None:
+def test_result_type_filter(tests: List[Dict[str, Union[str, int]]]) -> None:  # noqa: WPS234
     """Test for checking the filter on the test result type.
 
     Args:
@@ -66,14 +68,15 @@ def test_result_type_filter(tests: List[Dict[str, Union[str, int]]]) -> None:
 
 
 @pytest.mark.usefixtures("tests")
-def test_date_filter(tests: List[Dict[str, Union[str, int]]], mocker: MockerFixture) -> None:
-    """Test for checking the filter on the number of days.
+def test_date_filter(tests: List[Dict[str, Union[str, int]]], mocker: MockerFixture) -> None:  # noqa: WPS234
+    """Test for checking the filter on the test date.
 
     Args:
         tests (List[Dict[str, Union[str, int]]]): Fixture of the test data to be converted.
+        mocker (MockerFixture): Pytest fixture for mocking.
     """
     mocked_tests = adapt_tests(tests)
-    parsed_tests = list(map(to_test, mocked_tests))
+    parsed_tests = list(map(test_converter, mocked_tests))
     mocker.patch("contact_tracing.resolvers.user_test.get_parsed_tests", return_value=parsed_tests)
 
     days = 5
@@ -87,7 +90,7 @@ def test_date_filter(tests: List[Dict[str, Union[str, int]]], mocker: MockerFixt
     assert sorted(actual_ids) == sorted(expected_ids), "If filtered correctly, then the test IDs should be the same"
 
 
-def adapt_tests(tests: List[Dict[str, Union[str, int]]]) -> List[Dict[str, Union[str, int]]]:
+def adapt_tests(tests: List[Dict[str, Union[str, int]]]) -> List[Dict[str, Union[str, int]]]:  # noqa: WPS234
     """Adapt the tests to mock the tests, especially to modify the date for testing.
 
     Args:

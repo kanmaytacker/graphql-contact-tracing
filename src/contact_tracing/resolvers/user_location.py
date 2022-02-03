@@ -1,6 +1,6 @@
 """Resolver functions for the UserLocation type."""
 from datetime import datetime, timezone
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 from dateutil import parser
 
@@ -20,10 +20,10 @@ def get_locations() -> List[UserLocation]:
     Returns:
         List[UserLocation]: A list of user locations.
     """
-    return map(to_location, locations)
+    return list(map(to_location, locations))
 
 
-def to_location(location: Dict[str, Union[str, int, Dict]]) -> UserLocation:
+def to_location(location: Dict[str, Any]) -> UserLocation:
     """Converts a dictionary to a UserLocation object.
 
     Args:
@@ -40,20 +40,20 @@ def to_location(location: Dict[str, Union[str, int, Dict]]) -> UserLocation:
     return UserLocation(id=location["id"], user_id=location["user_id"], location=parsed_location, timestamp=timestamp)
 
 
-def get_location(id: int) -> Optional[UserLocation]:
+def get_location(location_id: int) -> Optional[UserLocation]:
     """Resolver function to fetch a user location from the database.
 
     Args:
-        id (int): The id of the user location to be fetched.
+        location_id (int): The id of the user location to be fetched.
 
     Returns:
         Optional[UserLocation]: The user location with the given id.
     """
-    return next((location for location in get_locations() if location.id == id), None)
+    return next((location for location in get_locations() if location.id == location_id), None)
 
 
 def get_nearby_locations(
-    user_location: Location, radius: float, days_threshold: int, include: List[int] = None
+    user_location: Location, radius: float, days_threshold: int, include: List[int]
 ) -> List[UserLocation]:
     """Methode to fetch nearby locations from the database.
 
@@ -113,7 +113,4 @@ def is_distance_valid(location_one: Location, location_two: Location, radius: fl
     Returns:
         bool: True if the location is within the radius of the input location, else False.
     """
-    print(
-        f"radius: {radius} distance: {haversine_distance(location_one, location_two)} less than {haversine_distance(location_one, location_two) <= radius}"
-    )
     return haversine_distance(location_one, location_two) <= radius

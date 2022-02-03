@@ -13,26 +13,26 @@ def get_users(include: List[int] = None) -> List[User]:
          - Add pagination and offset
          - Add more filters
 
-     Args:
-         include (List[int]): A list of user ids to filter the results on.
+    Args:
+        include (List[int], optional): List of users to filtered on. Defaults to None.
 
-     Returns:
-         List[User]: A list of users.
+    Returns:
+        List[User]: A list of users.
     """
     parsed_users = map(lambda user: User(**user), users)
     if not include:
         return list(parsed_users)
 
-    return list(filter(lambda user: user.id in include, parsed_users))
+    return list(filter(lambda user: user.id in include, parsed_users))  # type: ignore[operator]
 
 
-def get_user(id: int) -> Optional[User]:
+def get_user(user_id: int) -> Optional[User]:
     """Resolver function to fetch a user from the database.
 
     Args:
-        id (int): The id of the user to fetch.
+        user_id (int): The id of the user to fetch.
 
     Returns:
         Optional[User]: The user with the given id.
     """
-    return next((user for user in get_users() if user.id == id), None)
+    return next((user for user in get_users() if user.id == user_id), None)

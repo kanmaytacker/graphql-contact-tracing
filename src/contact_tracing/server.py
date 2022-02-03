@@ -1,10 +1,11 @@
 """Entry point for the application."""
 import uvicorn
 from fastapi import FastAPI
+from starlette.responses import RedirectResponse
 from strawberry.asgi import GraphQL
 
-from .common.config import DEBUG, HOST, PORT, PROJECT_NAME, RELOAD, VERSION
-from .schema.schema import schema
+from contact_tracing.common.config import DEBUG, HOST, PORT, PROJECT_NAME, RELOAD, VERSION
+from contact_tracing.schema.schema import schema
 
 
 def get_application() -> FastAPI:
@@ -19,6 +20,16 @@ def get_application() -> FastAPI:
 app = get_application()
 graphql_app = GraphQL(schema)
 app.add_route("/graphql", graphql_app)
+
+
+@app.get("/")
+async def redirect() -> RedirectResponse:
+    """Redirects to the GraphQL endpoint.
+
+    Returns:
+        RedirectResponse: A redirect response to the GraphQL endpoint.
+    """
+    return RedirectResponse(url="/graphql")
 
 
 def main() -> int:
