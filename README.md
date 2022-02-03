@@ -88,6 +88,17 @@ If you want to execute the test suite:
 make test
 ```
 
+Specific tests can be run using the match parameter or running the native `pytest` command.
+
+```bash
+make test match=training
+```
+or 
+```bash
+pdm run pytest -c config/pytest.ini --cov-config config/coverage.ini -k "training"
+```
+The code coverage of the test suite is currently `98%`.
+![Code Coverage](media/coverage.png)
 ## Folder structure
 ```
 ├── src/
